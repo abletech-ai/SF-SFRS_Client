@@ -1,14 +1,16 @@
 import numpy as np
 import cv2
+import os
 
-DEPLOY_PROTOTXT_PATH = './face_detection/deploy.prototxt.txt'
-SSD_FACE_DETECTOR_MODEL_PATH = './face_detection/res10_300x300_ssd_iter_140000.caffemodel'
+DEPLOY_PROTOTXT_PATH = os.path.join('face_detection', 'deploy.prototxt.txt')
+SSD_FACE_DETECTOR_MODEL_PATH = os.path.join('face_detection', 'res10_300x300_ssd_iter_140000.caffemodel')
 
 
 class FaceDetector:
     def __init__(self, face_detector_type):
         if face_detector_type.__eq__('ssd'):
             self.detector_type = face_detector_type
+
             self.face_detector_model = cv2.dnn.readNetFromCaffe(DEPLOY_PROTOTXT_PATH, SSD_FACE_DETECTOR_MODEL_PATH)
 
     def check_and_detect(self, frame):

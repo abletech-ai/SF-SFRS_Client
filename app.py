@@ -1,3 +1,4 @@
+from distutils.log import debug
 import io
 import time
 from datetime import datetime
@@ -21,10 +22,16 @@ DATA_FOLDER = os.path.join("static", "data")
 # global counter variable for image capture and class id
 CAPTURE_IMAGE = False
 CLASS_ID = None
-
+sep = os.sep
+box_image_path = os.path.join('static', 'sv_im', 'box.png')
+cropped_frame_path = os.path.join('static', 'sv_im', 'cropped-frame.png')
+crop_path = os.path.join('static', 'sv_im', 'cropped.png')
+db_im_path = os.path.join('static', 'sv_im', 'db_image.png')
+profiles_path = os.path.join("templates", 'profiles.json')
 
 def delete_current_captured_saved_image():
-    folder_path = ('static/sv_im/')
+    #folder_path = ('static/sv_im/')
+    folder_path = os.path.join('static', 'sv_im') + sep
 
     # using listdir() method to list the files of the folder
     test = os.listdir(folder_path)
@@ -38,15 +45,15 @@ def delete_current_captured_saved_image():
 def web_streaming():
     global CAPTURE_IMAGE, CLASS_ID
 
-    vid = cv2.VideoCapture(0)
+    vid = cv2.VideoCapture(1)
     vid.set(cv2.CAP_PROP_FPS, 30)
     vid.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
     vid.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
+    
+    if os.path.exists(profiles_path):
+        os.remove(profiles_path)
 
-    if os.path.exists("templates/profiles.json"):
-        os.remove("templates/profiles.json")
-
-    delete_current_captured_saved_image()
+    #delete_current_captured_saved_image()
 
     while True:
         # Capture the video
@@ -64,10 +71,10 @@ def web_streaming():
             if (output['detectable']) and (output['faceonly'].all() is not None):
                 request_data = {'id': CLASS_ID,
                                 'face': output['faceonly'], 'box': output['box']}
-                cv2.imwrite('static/sv_im/box.png', output['box'])
+                cv2.imwrite(box_image_path, output['box'])
                 resized_cropped_face = cv2.resize(request_data['face'], (400, 400))
-                cv2.imwrite('static/sv_im/cropped-frame.png', resized_cropped_face)
-                cv2.imwrite('static/sv_im/cropped.png', request_data['face'])
+                cv2.imwrite(cropped_frame_path, resized_cropped_face)
+                cv2.imwrite(crop_path, request_data['face'])
 
             else:
                 print('Face Not Found or Lightening Issues...')
@@ -80,8 +87,8 @@ def web_streaming():
         ret, jpeg = cv2.imencode('.jpg', frame)
         img = jpeg.tobytes()
 
-        if os.path.exists('static/sv_im/cropped.png') and os.path.exists('static/sv_im/db_image.png'):
-            img_st_mtime = os.stat('static/sv_im/cropped.png').st_mtime
+        if os.path.exists(crop_path) and os.path.exists(db_im_path):
+            img_st_mtime = os.stat(crop_path).st_mtime
 
             img_str_time = datetime.fromtimestamp(img_st_mtime).strftime("%H:%M:%S")
             current_time = datetime.now().strftime("%H:%M:%S")
@@ -93,8 +100,8 @@ def web_streaming():
                 print('resetting...')
                 delete_current_captured_saved_image()
 
-                if os.path.exists("templates/profiles.json"):
-                    os.remove("templates/profiles.json")
+                if os.path.exists(profiles_path):
+                    os.remove(profiles_path)
 
                 print('reset done.')
 
@@ -130,8 +137,8 @@ def tasks():
             if len(CLASS_ID) == 0:
                 CLASS_ID = None
 
-            if os.path.exists('static/sv_im/cropped.png') and os.path.exists('static/sv_im/box.png'):
-                img_st_mtime = os.stat('static/sv_im/box.png').st_mtime
+            if os.path.exists(crop_path) and os.path.exists(box_image_path):
+                img_st_mtime = os.stat(box_image_path).st_mtime
 
                 img_str_time = datetime.fromtimestamp(img_st_mtime).strftime("%H:%M:%S")
                 current_time = datetime.now().strftime("%H:%M:%S")
@@ -144,7 +151,7 @@ def tasks():
 
             # send the data to the server
             api = 'http://192.168.100.196:5000/fr'
-            image_file = 'static/sv_im/cropped.png'
+            image_file = crop_path
 
             time.sleep(0.5)
 
@@ -170,12 +177,12 @@ def tasks():
 
                     cv2.imwrite('static/sv_im/db_image.png', db_rgb_img_array)
 
-                    images_dict = {'db_img': 'static/sv_im/db_image.png',
-                                   'cr_img': 'static/sv_im/cropped-frame.png',
+                    images_dict = {'db_img': db_im_path,
+                                   'cr_img': cropped_frame_path,
                                    'id': response['id'].split("_")[0],
                                    'name': response['id'].split("_")[1]}
 
-                    with open('templates/profiles.json', 'w') as outfile:
+                    with open(profiles_path, 'w') as outfile:
                         # Writing from json file
                         outfile.write(json.dumps(images_dict))
 
@@ -199,11 +206,11 @@ def tasks():
     return render_template('index.html')
 
 
-@app.route('/get_similarity_json', methods=['POST', 'GET'])
+#@app.route('/get_similarity_json', methods=['POST', 'GET'])
 def get_similarity_json():
     try:
         # Opening JSON file
-        with open('templates/profiles.json', 'r') as openfile:
+        with open(profiles_path, 'r') as openfile:
             # Reading from json file
             json_object = json.load(openfile)
 
@@ -218,4 +225,4 @@ def form():
 
 
 if __name__ == '__main__':
-    app.run()
+    app.run(debug=True)
