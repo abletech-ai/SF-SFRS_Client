@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="static/vendor/css/bootstrap.min.css">
+
+    <title>RAHBAR</title>
+    <style>
+        hr{
+            background-color: #ffffff;
+        }
+        div.card{
+            border: 1px solid #ffffff;
+        }
+        img.sim_imgs{
+        width: 85%;
+        }
+    </style>
+</head>
+<body class="text-light" style="background: linear-gradient(90deg, rgba(9,9,121,1) 13%, rgb(46 176 134) 100%);">
+<div class="row" style="background: #7bbeba;">
+    <div class="col-md-4">
+        <h3 class="m-3" style="color: #fff;">RAHBAR</h3>
+    </div>
+    <div class="col-md-4">
+
+    </div>
+    <div class="col-md-4 text-right">
+        <img class="m-2" style="width: 35%;" src="static/logo/logo.png">
+    </div>
+</div>
+<hr>
+<div class="row">
+    <div class="col-md-12">
+        <div class="row">
+            <div class="col-md-9">
+                <div class="card" style="background-color: rgba(11,46,19,0)">
+                    <div class="card-body">
+                        <div class="card-tilte">
+                            <div class="row">
+                                <div class="col-6">
+                                    <form id="ipform" action="https://google.com" onsubmit="event.preventDefault()">
+                                        <div class="row">
+                                            <div class="col-6">
+                                                <label>
+                                                    <input type="text" name="uid" id="uid" class="form-control"
+                                                           placeholder="Please Enter ID">
+                                                </label>
+                                            </div>
+                                            <div class="col">
+                                                <input id="click" type="submit" value="Verify" name="submit" class="form-control">
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        <hr>
+                        <p class="card-text m-auto">
+<!--                            Video Feed Will Go Here....-->
+                            <img id="bg" src="{{ url_for('live_streaming') }}">
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card" style="background-color: rgba(11,46,19,0);">
+                    <div class="card-body">
+                        <h5 class="card-title">Record</h5>
+                        <hr>
+                        <div class="row">
+                            <div class="col-5">ID:</div>
+                            <div class="col-7" id="pid">AD0000212</div>
+                        </div>
+                        <div class="row">
+                            <div class="col-5">Name:</div>
+                            <div class="col-7" id="name">John Doe</div>
+                        </div>
+                        <hr>
+                        <div class="row">
+                            <div class="col-6">
+                                <p class="card-text">Record Image</p>
+                                <img id="db_image" src="{{ dummy_image }}"
+                                     class="img-thumbnail" alt="Record Image">
+                            </div>
+                            <div class="col-6">
+                                <p class="card-text">Current Image</p>
+                                <img src="{{ dummy_image }}"
+                                     id="current_image" class="img-thumbnail" alt="Current Image">
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="row">
+                            <div class="col-12">
+                                <p class="text-center" id="confidence">Confidence: 99.9%</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" style="background-color: rgba(11,46,19,0);">
+                    <div class="card-body" style="overflow-y: auto">
+                        <h5 class="card-title">History</h5>
+                        <hr>
+                        <p class="card-text" id="logs">
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Optional JavaScript -->
+<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+<script src="static/vendor/js/jquery.min.js"></script>
+<script src="static/vendor/js/popper.min.js"></script>
+<script src="static/vendor/js/bootstrap.bundle.min.js"></script>
+<script src="static/js/app.js"></script>
+</body>
+</html>
