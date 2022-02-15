@@ -24,7 +24,7 @@ CLASS_ID = None
 
 
 def delete_current_captured_saved_image():
-    folder_path = ('static/sv_im/')
+    folder_path = 'static/sv_im/'
 
     # using listdir() method to list the files of the folder
     test = os.listdir(folder_path)
@@ -103,6 +103,15 @@ def web_streaming():
 
 
 app = Flask(__name__)
+app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
+
+
+@app.after_request
+def after_request(response):
+    response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate, public, max-age=0"
+    response.headers["Expires"] = '0'
+    response.headers["Pragma"] = "no-cache"
+    return response
 
 
 @app.route('/', methods=['POST', 'GET'])
@@ -139,11 +148,11 @@ def tasks():
                 FMT = '%H:%M:%S'
                 tdelta = datetime.strptime(current_time, FMT) - datetime.strptime(img_str_time, FMT)
 
-                if int(str(tdelta).split(':')[1]) > 0 or int(str(tdelta).split(':')[-1]) > 5:
+                if int(str(tdelta).split(':')[1]) > 0 or int(str(tdelta).split(':')[-1]) > 10:
                     delete_current_captured_saved_image()
 
             # send the data to the server
-            api = 'http://192.168.100.196:5000/fr'
+            api = 'http://192.168.100.220:5000/fr'
             image_file = 'static/sv_im/cropped.png'
 
             time.sleep(0.5)
@@ -167,6 +176,8 @@ def tasks():
                     db_bgr_img_array = np.asarray(db_img)
 
                     db_rgb_img_array = cv2.cvtColor(db_bgr_img_array, cv2.COLOR_BGR2RGB)
+
+                    db_rgb_img_array = cv2.resize(db_rgb_img_array, (400, 400))
 
                     cv2.imwrite('static/sv_im/db_image.png', db_rgb_img_array)
 
@@ -218,4 +229,4 @@ def form():
 
 
 if __name__ == '__main__':
-    app.run()
+    app.run(debug=True)
