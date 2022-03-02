@@ -61,16 +61,16 @@ def web_streaming():
 
         # flip the image
         if CAPTURE_IMAGE:
-            if (output['detectable']) and (output['faceonly'].all() is not None):
-                request_data = {'id': CLASS_ID,
-                                'face': output['faceonly'], 'box': output['box']}
-                cv2.imwrite('static/sv_im/box.png', output['box'])
-                resized_cropped_face = cv2.resize(request_data['face'], (400, 400))
-                cv2.imwrite('static/sv_im/cropped-frame.png', resized_cropped_face)
-                cv2.imwrite('static/sv_im/cropped.png', request_data['face'])
+                if (output['detectable']) and (output['faceonly'].all() is not None):
+                    request_data = {'id': CLASS_ID,
+                                    'face': output['faceonly'], 'box': output['box']}
+                    cv2.imwrite('static/sv_im/box.png', output['box'])
+                    resized_cropped_face = cv2.resize(request_data['face'], (400, 400))
+                    cv2.imwrite('static/sv_im/cropped-frame.png', resized_cropped_face)
+                    cv2.imwrite('static/sv_im/cropped.png', request_data['face'])
 
-            else:
-                print('Face Not Found or Lightening Issues...')
+                else:
+                    print('Face Not Found or Lightening Issues...')
 
         CAPTURE_IMAGE = False
 
@@ -152,7 +152,7 @@ def tasks():
                     delete_current_captured_saved_image()
 
             # send the data to the server
-            api = 'http://192.168.100.220:5000/fr'
+            api = 'http://192.168.100.245:5000/fr'
             image_file = 'static/sv_im/cropped.png'
 
             time.sleep(0.5)

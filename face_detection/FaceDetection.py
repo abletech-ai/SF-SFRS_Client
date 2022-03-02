@@ -50,7 +50,7 @@ class FaceDetector:
 
             # filter out weak detections by ensuring the `confidence` is
             # greater than the minimum confidence
-            if confidence > 0.9:
+            if confidence > 0.99:
                 # compute the (x, y)-coordinates of the bounding box for the
                 # object
                 boxex = detections[0, 0, i, 3:7] * np.array([w, h, w, h])
@@ -76,8 +76,7 @@ class FaceDetector:
                 try:
                     face_crop = box[(y-10):(h+10), (x-10):(w+10)]
                 except:
-                    face_crop = box[y:h, x:w]
-
+                    face_crop = box[(y-10):(h+10), (x-10):(w+10)]
                 #cv2.rectangle(box, (x, y), (w, h), (255, 255, 255), 2)
 
         # drawing sna box
@@ -100,16 +99,16 @@ class FaceDetector:
 
         ### blurr checking
 
-        if var_lap < 90:
-            blurr = True
-            text = 'Poor Lighting'
-            r_color = (0, 0, 255)
-            cv2.rectangle(frame, (180, 60), (450, 95), r_color, cv2.FILLED)
-            cv2.putText(frame, text, (220, 90), 2, 1, t_color, 2)
+        # if var_lap < 90:
+        #     blurr = True
+        #     text = 'Poor Lighting'
+        #     r_color = (0, 0, 255)
+        #     cv2.rectangle(frame, (180, 60), (450, 95), r_color, cv2.FILLED)
+        #     cv2.putText(frame, text, (220, 90), 2, 1, t_color, 2)
 
         ### detecting faces and multi faces
 
-        elif len(idxs) == 1:
+        if len(idxs) == 1:
             text = 'Face Found'
             r_color = (0, 255, 0)
             cv2.rectangle(frame, (180, 60), (450, 95), r_color, cv2.FILLED)
@@ -122,10 +121,10 @@ class FaceDetector:
             cv2.rectangle(frame, (180, 60), (450, 95), r_color, cv2.FILLED)
             cv2.putText(frame, text, (220, 90), 2, 1, t_color, 2)
 
-        if (not blurr) and (face_found):
+        if face_found:
             detectable = True
 
-        output = {'frame': frame, 'box': box, 'blurr': blurr, 'detectable': detectable}
+        output = {'frame': frame, 'box': box, 'blurr': False, 'detectable': detectable}
 
         if detectable:
             output['faceonly'] = face_crop
